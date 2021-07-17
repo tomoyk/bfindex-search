@@ -9,15 +9,19 @@ def calc(k, in_txt):
     for i in range(k):
         yield gen_hash(in_txt, str(i))
 
-def bfindex():
-    _bfindex = 0
+def main():
+    bfindex = 0  # long
     m = 64
     k = 3
     for p in calc(k, "hello"):
-        print(p % m)
+        fit_hash = p % m
+        invol = 2 ** fit_hash
+        print(invol)
+        bfindex = bfindex | invol
+        # print("p =", p, "fit_hash =", fit_hash)
+        # print("invol =", invol, "bfindex =", bfindex)
+        print(bin(bfindex)[2:].zfill(64))
 
-def main():
-    bfindex()
 
 if __name__ == "__main__":
     main()
