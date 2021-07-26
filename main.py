@@ -14,11 +14,11 @@ def gen_hash_wrapper(k: int, in_txt: str):
         yield gen_hash(in_txt, str(i))
 
 
-def calc_bfindex(words: list) -> int:
+def calc_bfindex(word) -> int:
     m = 64  # N[bit]
     bfindex = 0  # long
     k = 3
-    for c in gen_hash_wrapper(k, words):
+    for c in gen_hash_wrapper(k, word):
         fit_hash = c % m
         invol = 2 ** fit_hash
         # print(invol)
@@ -40,12 +40,20 @@ def get_words(filename: str) -> list:
 def main():
     print("# step.1 - ファイルからキーワードの登録")
     input_files = glob.glob("input_files/*")
+    bfindex_table = {}
     for in_file in input_files:
         print(f"File = {in_file}")
         for word in get_words(in_file):
             print(f"Word = {word}")
             bf = calc_bfindex(word)
             print(f"Bfindex = {bf}")
+            bfindex_table[bf] = in_file
+    
+    print("# step.2 - キーワード入力による検索")
+    search_word = input("Word >")
+    search_bindex = calc_bfindex(search_word)
+    print(bfindex_table.get(search_bindex, "Not Found"))
+    
 
 if __name__ == "__main__":
     main()
