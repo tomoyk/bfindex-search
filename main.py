@@ -14,7 +14,7 @@ def gen_hash_wrapper(k: int, in_txt: str):
         yield gen_hash(in_txt, str(i))
 
 
-def calc_bfindex(word) -> int:
+def calc_bfindex(word: str) -> int:
     m = 64  # N[bit]
     bfindex = 0  # long
     k = 3
@@ -37,22 +37,63 @@ def get_words(filename: str) -> list:
         words = list(filter(None, _words))
     return words
 
+def search_bfindex(bfindex_table: list, target_bfindex: str) -> int:
+    for i,_bf in enumerate(bfindex_table):
+        if _bf == search_bfindex:
+            return i
+    return -1
+
+
 def main():
     print("# step.1 - ファイルからキーワードの登録")
     input_files = glob.glob("input_files/*")
-    bfindex_table = {}
+    file_table = {}
+
     for in_file in input_files:
         print(f"File = {in_file}")
+        bfindex_table = []
+        word_table = []
+        
         for word in get_words(in_file):
             print(f"Word = {word}")
             bf = calc_bfindex(word)
             print(f"Bfindex = {bf}")
-            bfindex_table[bf] = in_file
+            bfindex_table.append(bf)
+            word_table.append(word)
+
+        file_table[in_file] = {
+            "bfindex": bfindex_table,
+            "word": word_table,
+        }
+
+    """
+    # 重複の数え上げ
+    for i,i_bft in enumerate(bfindex_table):
+        for j,j_bft in enumerate(bfindex_table):
+            if i >= j:
+                continue
+            elif i_bft == j_bft:
+                print(word_table[i], "==", word_table[j])
+    """
     
     print("# step.2 - キーワード入力による検索")
-    search_word = input("Word >")
+    while True:
+        search_word = input("[Search Keyword | END]> ")
+        if search_word == "END":
+            return
+        
+        target_bfindex = calc_bfindex(search_word)
+        for fname,body in file_table.items():
+            res = search_bfindex(body["bfindex"], target_bfindex)            
+            if res >= 0:  # match
+                print("positive")
+                if word_table[res] == search_word:  # true-positive
+                    print("TP Found::", search_word)
+                else:  # false-positive
+                    print("FP Found::", search_word)
+            else:  # unmatch
+                print("negative")
     search_bindex = calc_bfindex(search_word)
-    print(bfindex_table.get(search_bindex, "Not Found"))
     
 
 if __name__ == "__main__":
