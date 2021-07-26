@@ -4,8 +4,9 @@ import re
 
 ENABLE_DEBUG = False
 
+
 def gen_hash(in_txt: str, salt: str) -> bytes:
-    b_txt = bytes(salt + in_txt, 'utf-8')
+    b_txt = bytes(salt + in_txt, "utf-8")
     m = hashlib.sha256(b_txt)
     return m.digest()[0]
 
@@ -39,8 +40,9 @@ def get_words(filename: str) -> list:
         words = list(filter(None, _words))
     return words
 
+
 def search_bfindex(bfindex_table: list, target_bfindex: int) -> int:
-    for i,_bf in enumerate(bfindex_table):
+    for i, _bf in enumerate(bfindex_table):
         if _bf == target_bfindex:
             return i
     return -1
@@ -55,7 +57,7 @@ def main():
         print(f"File = {in_file}")
         bfindex_table = []
         word_table = []
-        
+
         for word in get_words(in_file):
             bf = calc_bfindex(word)
             if ENABLE_DEBUG:
@@ -78,17 +80,17 @@ def main():
             elif i_bft == j_bft:
                 print(word_table[i], "==", word_table[j])
     """
-    
+
     print()
     print("# step.2 - キーワード入力による検索")
     search_word = input("[Search Keyword | END]> ")
     if search_word == "END":
         return
-    
+
     target_bfindex = calc_bfindex(search_word)
-    for fname,body in file_table.items():
+    for fname, body in file_table.items():
         res = search_bfindex(body["bfindex"], target_bfindex)
-        # print(target_bfindex in body["bfindex"])           
+        # print(target_bfindex in body["bfindex"])
         if res >= 0:  # match
             print("Positive in", fname)
             print("\t", body["word"][res], "==", search_word)
@@ -100,7 +102,7 @@ def main():
             """
         else:  # unmatch
             print("Negative in", fname)
-    
+
 
 if __name__ == "__main__":
     main()
