@@ -2,6 +2,7 @@ import glob
 import hashlib
 import re
 
+ENABLE_DEBUG = False
 
 def gen_hash(in_txt: str, salt: str) -> bytes:
     b_txt = bytes(salt + in_txt, 'utf-8')
@@ -25,7 +26,8 @@ def calc_bfindex(word: str) -> int:
         bfindex = bfindex | invol
         # print("p =", p, "fit_hash =", fit_hash)
         # print("invol =", invol, "bfindex =", bfindex)
-    print("Bfindex::bits =", bin(bfindex)[2:].zfill(64))
+    if ENABLE_DEBUG:
+        print("Bfindex::bits =", bin(bfindex)[2:].zfill(64))
     return bfindex
 
 
@@ -37,9 +39,9 @@ def get_words(filename: str) -> list:
         words = list(filter(None, _words))
     return words
 
-def search_bfindex(bfindex_table: list, target_bfindex: str) -> int:
+def search_bfindex(bfindex_table: list, target_bfindex: int) -> int:
     for i,_bf in enumerate(bfindex_table):
-        if _bf == search_bfindex:
+        if _bf == target_bfindex:
             return i
     return -1
 
@@ -55,9 +57,10 @@ def main():
         word_table = []
         
         for word in get_words(in_file):
-            print(f"Word = {word}")
             bf = calc_bfindex(word)
-            print(f"Bfindex = {bf}")
+            if ENABLE_DEBUG:
+                print(f"Word = {word}")
+                print(f"Bfindex = {bf}")
             bfindex_table.append(bf)
             word_table.append(word)
 
@@ -76,24 +79,27 @@ def main():
                 print(word_table[i], "==", word_table[j])
     """
     
+    print()
     print("# step.2 - キーワード入力による検索")
-    while True:
-        search_word = input("[Search Keyword | END]> ")
-        if search_word == "END":
-            return
-        
-        target_bfindex = calc_bfindex(search_word)
-        for fname,body in file_table.items():
-            res = search_bfindex(body["bfindex"], target_bfindex)            
-            if res >= 0:  # match
-                print("positive")
-                if word_table[res] == search_word:  # true-positive
-                    print("TP Found::", search_word)
-                else:  # false-positive
-                    print("FP Found::", search_word)
-            else:  # unmatch
-                print("negative")
-    search_bindex = calc_bfindex(search_word)
+    search_word = input("[Search Keyword | END]> ")
+    if search_word == "END":
+        return
+    
+    target_bfindex = calc_bfindex(search_word)
+    for fname,body in file_table.items():
+        res = search_bfindex(body["bfindex"], target_bfindex)
+        # print(target_bfindex in body["bfindex"])           
+        if res >= 0:  # match
+            print("Positive in", fname)
+            print("\t", body["word"][res], "==", search_word)
+            """
+            if body["word"][res] == search_word:  # true-positive
+                print("TP Found::", search_word)
+            else:  # false-positive
+                print("FP Found::", search_word)
+            """
+        else:  # unmatch
+            print("Negative in", fname)
     
 
 if __name__ == "__main__":
