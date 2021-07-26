@@ -9,7 +9,7 @@ def gen_hash(in_txt: str, salt: str) -> bytes:
     return m.digest()[0]
 
 
-def calc(k: int, in_txt: str):
+def gen_hash_wrapper(k: int, in_txt: str):
     for i in range(k):
         yield gen_hash(in_txt, str(i))
 
@@ -18,7 +18,7 @@ def calc_bfindex(words: list) -> int:
     m = 64  # N[bit]
     bfindex = 0  # long
     k = 3
-    for c in calc(k, words):
+    for c in gen_hash_wrapper(k, words):
         fit_hash = c % m
         invol = 2 ** fit_hash
         # print(invol)
