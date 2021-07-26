@@ -1,5 +1,6 @@
 import glob
 import hashlib
+import re
 
 
 def gen_hash(in_txt: str, salt: str) -> bytes:
@@ -13,29 +14,38 @@ def calc(k: int, in_txt: str):
         yield gen_hash(in_txt, str(i))
 
 
-def calc_wrap(filename: str):
+def calc_bfindex(words: list) -> int:
     m = 64  # N[bit]
     bfindex = 0  # long
     k = 3
-
-    with open(filename) as f:
-        file_content = f.read()
-
-    for c in calc(k, file_content):
+    for c in calc(k, words):
         fit_hash = c % m
         invol = 2 ** fit_hash
-        print(invol)
+        # print(invol)
         bfindex = bfindex | invol
         # print("p =", p, "fit_hash =", fit_hash)
         # print("invol =", invol, "bfindex =", bfindex)
-        print(bin(bfindex)[2:].zfill(64))
+    print("Bfindex::bits =", bin(bfindex)[2:].zfill(64))
+    return bfindex
 
+
+def get_words(filename: str) -> list:
+    with open(filename) as f:
+        # 空白/改行で分割
+        _words = re.split(r"[\n ]", f.read())
+        # 空要素の削除
+        words = list(filter(None, _words))
+    return words
 
 def main():
+    print("# step.1 - ファイルからキーワードの登録")
     input_files = glob.glob("input_files/*")
     for in_file in input_files:
-        calc_wrap(in_file)
-
+        print(f"File = {in_file}")
+        for word in get_words(in_file):
+            print(f"Word = {word}")
+            bf = calc_bfindex(word)
+            print(f"Bfindex = {bf}")
 
 if __name__ == "__main__":
     main()
