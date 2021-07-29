@@ -24,7 +24,7 @@ def calc_bfindex(word: str) -> int:
     for c in gen_hash_wrapper(k, word):
         fit_hash = c % m
         invol = 2 ** fit_hash
-        print(invol)
+        print("invol =", invol)
         bfindex = bfindex | invol
         print("c =", c, "fit_hash =", fit_hash)
         print("invol =", invol, "bfindex =", bfindex)
