@@ -2,7 +2,7 @@ import glob
 import hashlib
 import re
 
-ENABLE_DEBUG = False
+ENABLE_DEBUG = True
 
 
 def gen_hash(in_txt: str, salt: str) -> bytes:
@@ -20,15 +20,16 @@ def calc_bfindex(word: str) -> int:
     m = 64  # N[bit]
     bfindex = 0  # long
     k = 3
+    print("+++ clac_bfindex():", word)
     for c in gen_hash_wrapper(k, word):
         fit_hash = c % m
         invol = 2 ** fit_hash
-        # print(invol)
+        print(invol)
         bfindex = bfindex | invol
-        # print("p =", p, "fit_hash =", fit_hash)
-        # print("invol =", invol, "bfindex =", bfindex)
-    if ENABLE_DEBUG:
-        print("Bfindex::bits =", bin(bfindex)[2:].zfill(64))
+        print("c =", c, "fit_hash =", fit_hash)
+        print("invol =", invol, "bfindex =", bfindex)
+        if ENABLE_DEBUG:
+            print("Bfindex::bits =", bin(bfindex)[2:].zfill(64))
     return bfindex
 
 
