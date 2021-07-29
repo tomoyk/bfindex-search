@@ -2,12 +2,14 @@ import glob
 import hashlib
 import re
 
-ENABLE_DEBUG = True
+ENABLE_DEBUG = False
 
 
 def gen_hash(in_txt: str, salt: str) -> bytes:
     b_txt = bytes(salt + in_txt, "utf-8")
     m = hashlib.sha256(b_txt)
+    print("m.hexdigest() =", m.hexdigest())
+    print("m.digest =", m.digest())
     return m.digest()[0]
 
 
@@ -20,16 +22,18 @@ def calc_bfindex(word: str) -> int:
     m = 64  # N[bit]
     bfindex = 0  # long
     k = 3
-    print("+++ clac_bfindex():", word)
+    if ENABLE_DEBUG:
+        print("+++ clac_bfindex():", word)
     for c in gen_hash_wrapper(k, word):
         fit_hash = c % m
         invol = 2 ** fit_hash
-        print("invol::bits =", bin(invol)[2:].zfill(64))
         bfindex = bfindex | invol
-        print("c =", c, "fit_hash =", fit_hash)
-        print("invol =", invol, "bfindex =", bfindex)
         if ENABLE_DEBUG:
+            print("c =", c, "fit_hash =", fit_hash)
+            print("invol =", invol, "bfindex =", bfindex)
+            print("invol::bits =", bin(invol)[2:].zfill(64))
             print("Bfindex::bits =", bin(bfindex)[2:].zfill(64))
+            print("")
     return bfindex
 
 

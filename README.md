@@ -2,8 +2,6 @@
 
 bfindexを用いた検索システム
 
-[レポートの概要](report.md)
-
 ## 環境
 
 - Python 3.9.5
